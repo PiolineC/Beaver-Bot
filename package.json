@@ -1,0 +1,15 @@
+{
+  "name": "beaver-bot",
+  "version": "0.1.0",
+  "description": "Facebook messenger bot.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "facebook-chat-api": "^1.4.0"
+  }
+}
