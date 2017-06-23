@@ -7,15 +7,11 @@ class CommandFinder {
         throw new Error('Do not instantiate CommandFinder.');
     }
 
-    static getCommands(options) {
-        return new Map(glob.sync('../../modules/commands/*.js', { cwd: __dirname })
+    static getCommands() {
+        return glob.sync('../../modules/commands/*.js', { cwd: __dirname })
             .map(path => require(path))
             .filter(mod => mod.prototype instanceof Command)
-            .map(cmd => {
-                const instance = new cmd(options);
-                return [instance.name, instance];
-            })
-        );
+            .map(cmd => new cmd());
     }
 }
 
