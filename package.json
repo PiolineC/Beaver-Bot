@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.0",
-    "facebook-chat-api": "^1.4.0"
+    "facebook-chat-api": "^1.4.0",
+    "glob": "^7.1.2"
   }
 }
