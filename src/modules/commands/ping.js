@@ -17,14 +17,14 @@ class Ping extends Command {
 
 	execute(msg) {
 		if (this.subscribed) {
-			if (msg != 'Pong!') {
+			if (msg.body != 'Pong!') {
 				return super.execute();
 			} else {
 				console.log(msg)
 				console.log("msg.timestamp is " + msg.timestamp);
 				console.log("this.start is " + this.start);
 				let timeTaken = parseInt(msg.timestamp) - this.start;
-				let output = "Took " + timeTaken + " seconds."
+				let output = "Took " + timeTaken + " ms"
 				this.start = -1;
 				this.subscribed = false;
 				return Promise.resolve(output);
