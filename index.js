@@ -9,37 +9,43 @@ let apiX; //global reference  to api object
 const CommandFinder = require("./src/core/discovery/command-finder.js");
 const commandMap = CommandFinder.getCommands();
 
-
-//attempt login
-login(credentials)
-    .then(promisifyAPI)
-    .then(api => { 
-        apiX = api; 
-        //listen method is still callback based   
-        api.listen(parseMessage)
-    })
-    .catch(console.error);
-
 //coverts the messenger API to promise-based
 //we avoid using promisifyAll to maintain the original method naming scheme of the API
 function promisifyAPI(api) {
-    for (let i of Object.keys(api)) 
-        api[i] = Promise.promisify(api[i]);    
+    for (let i of Object.keys(api))
+        api[i] = Promise.promisify(api[i]);
     return api;
 }
 
-function parseMessage(err, input) {    
+function parseMessage(err, input) {
     if (err) console.error(err);
     console.log(input);
     if (!input || !input.body) return;
     const thread = input.threadID;
     const msg = input.body;
     const cmd = msg.split(' ')[0].slice(1);
-    
+
     for (let i of commandMap.values()) {
-		if (i.trigger(cmd)) {
-			return i.execute(msg)
-				.then(output => apiX.sendMessage(output, thread));
-		}
-	}
+        if (i.trigger(cmd) || i.subscribed) {
+            return i.execute(input)
+                .then(output => apiX.sendMessage(output, thread))
+                .catch(console.error);
+        }
+    }
 }
+
+// XXX eventually add commandline parsing for chatIDs
+
+let loginOptions = {
+    logLevel: 'info',
+    selfListen: true,
+    // pageID: 1774234042601695
+}
+
+login(credentials, loginOptions)
+    .then(promisifyAPI)
+    .then(api => {
+        apiX = api;
+        api.listen(parseMessage)
+    })
+    .catch(console.error);

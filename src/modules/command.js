@@ -7,7 +7,8 @@ class Command {
         this.description = '';
         this.usage = '';
         this.help = '';
-    }   
+        this.subscribed = false;
+    }
 
     execute(msg, input) {
         return Promise.reject();
