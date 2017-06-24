@@ -2,13 +2,15 @@
 //entry point for the API
 const Promise = require('bluebird');
 const login = Promise.promisify(require('facebook-chat-api'));
-const credentials = require('./login.json');
 let apiX; //global reference  to api object
 
 //initialize command modules
-const CommandFinder = require("./src/core/discovery/command-finder.js");
+const CommandFinder = require('./src/core/discovery/command-finder.js');
 const commands = CommandFinder.getCommands();
 
+const config = require('./config.json');
+const prefix = config.prefix;
+const self = config.id;
 
 //coverts the messenger API to promise-based
 //we avoid using promisifyAll to maintain the original method naming scheme of the API
@@ -27,20 +29,20 @@ function parseMessage(err, msg) {
     const args = input.slice(input.indexOf(' ') + 1); //input text excluding the command string
     const thread = msg.threadID;
 
-    commands.map(i => {
-        if (!i.trigger(cmd)) return;
+    for (let i of commands) {
+        if (!i.trigger(msg, cmd)) continue;
+
         i.execute(msg, args)
             .then(output => { if (output) apiX.sendMessage(output, thread) })
             .catch(errMessage => apiX.sendMessage(errMessage, thread));
-    })
+    }
 }
 
-
-// XXX eventually add commandline parsing for chatIDs
-let loginOptions = {
+// TODO: eventually add commandline parsing for chatIDs
+const credentials = require('./login.json');
+const loginOptions = {
     logLevel: 'info',
     selfListen: true,
-    // pageID: 1774234042601695
 }
 
 login(credentials, loginOptions)
