@@ -13,15 +13,28 @@ const help = 'Responds with "Pong!" and the time taken to execute the command.';
 class Ping extends Command {
 	constructor() {
 		super(name, description, help);
+		this.start = -1;
 	}
 
-	execute() {
-		const start = process.hrtime();
-		return Promise.resolve('Pong!')
-			.then(output => { 
-				const diff = process.hrtime(start); 
-				return output + `\nTook ${diff[0]*1e3 + diff[1]/1e6} ms`;
-			});
+	execute(msg) {
+		if (this.subscribed) {
+			if (msg.body != 'Pong!') {
+				return super.execute();
+			} else {
+				console.log(msg)
+				console.log("msg.timestamp is " + msg.timestamp);
+				console.log("this.start is " + this.start);
+				let timeTaken = parseInt(msg.timestamp) - this.start;
+				let output = "Took " + timeTaken + " ms"
+				this.start = -1;
+				this.subscribed = false;
+				return Promise.resolve(output);
+			}
+		} else {
+			this.start = parseInt(msg.timestamp);
+			this.subscribed = true;
+			return Promise.resolve('Pong!');
+		}
 	}
 
 	trigger(cmd) {
