@@ -2,12 +2,13 @@
 //entry point for the API
 const Promise = require('bluebird');
 const login = Promise.promisify(require('facebook-chat-api'));
-const credentials = require('./config.json');
+const credentials = require('./login.json');
 let apiX; //global reference  to api object
 
 //initialize command modules
 const CommandFinder = require("./src/core/discovery/command-finder.js");
-const commandMap = CommandFinder.getCommands();
+const commands = CommandFinder.getCommands();
+
 
 //coverts the messenger API to promise-based
 //we avoid using promisifyAll to maintain the original method naming scheme of the API
@@ -17,25 +18,25 @@ function promisifyAPI(api) {
     return api;
 }
 
-function parseMessage(err, input) {
+function parseMessage(err, msg) {
     if (err) console.error(err);
-    console.log(input);
-    if (!input || !input.body) return;
-    const thread = input.threadID;
-    const msg = input.body;
-    const cmd = msg.split(' ')[0].slice(1);
+    console.log(msg)
+    if (!msg.body) return;
+    const input = msg.body;
+    const cmd = input.split(' ')[0].slice(1); //command string
+    const args = input.slice(input.indexOf(' ') + 1); //input text excluding the command string
+    const thread = msg.threadID;
 
-    for (let i of commandMap.values()) {
-        if (i.trigger(cmd) || i.subscribed) {
-            return i.execute(input)
-                .then(output => apiX.sendMessage(output, thread))
-                .catch(console.error);
-        }
+    for (let i of commands) {
+        if (!i.trigger(cmd) && !i.subscribed) continue;
+        i.execute(msg, args)
+            .then(output => { if (output) apiX.sendMessage(output, thread) })
+            .catch(errMessage => apiX.sendMessage(errMessage, thread));
     }
 }
 
-// XXX eventually add commandline parsing for chatIDs
 
+// XXX eventually add commandline parsing for chatIDs
 let loginOptions = {
     logLevel: 'info',
     selfListen: true,

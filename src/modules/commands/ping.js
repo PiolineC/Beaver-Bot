@@ -6,12 +6,13 @@ Responds to a "ping" with a "pong". Useful to test the responsiveness of the bot
 const Command = require('../command.js');
 const Promise = require('bluebird');
 
+const name = 'ping';
+const description = 'Responds with "Pong!"';
+const help = 'Responds with "Pong!" and the time taken to execute the command.';
+
 class Ping extends Command {
 	constructor() {
-		super();
-		this.name = 'ping';
-		this.description = 'Responds with "Pong!"';
-		this.help = 'Responds with "Pong!" and the time taken to execute the command.';
+		super(name, description, help);
 		this.start = -1;
 	}
 
