@@ -31,6 +31,7 @@ function parseMessage(err, msg) {
 
     for (let i of commands) {
         if (!i.trigger(msg, cmd)) continue;
+
         i.execute(msg, args)
             .then(output => { if (output) apiX.sendMessage(output, thread) })
             .catch(errMessage => apiX.sendMessage(errMessage, thread));

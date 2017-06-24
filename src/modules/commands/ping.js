@@ -23,7 +23,7 @@ class Ping extends Command {
 			return this.pong(timestamp);
 		return this.ping(timestamp);		
 	}
-
+  
 	trigger(msg, cmd) {
 		if (this.subscribed)
 			return msg.body === 'Pong!';
