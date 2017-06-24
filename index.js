@@ -27,12 +27,12 @@ function parseMessage(err, msg) {
     const args = input.slice(input.indexOf(' ') + 1); //input text excluding the command string
     const thread = msg.threadID;
 
-    for (let i of commands) {
-        if (!i.trigger(cmd) && !i.subscribed) continue;
+    commands.map(i => {
+        if (!i.trigger(cmd)) return;
         i.execute(msg, args)
             .then(output => { if (output) apiX.sendMessage(output, thread) })
             .catch(errMessage => apiX.sendMessage(errMessage, thread));
-    }
+    })
 }
 
 

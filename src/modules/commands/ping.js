@@ -36,10 +36,6 @@ class Ping extends Command {
 			return Promise.resolve('Pong!');
 		}
 	}
-
-	trigger(cmd) {
-		return cmd === 'ping';
-	}
 }
 
 module.exports = Ping;

@@ -40,7 +40,7 @@ class Command {
      * @return {boolean} Returns true if the command should be executed, otherwise false.
      */
     trigger(cmd) {
-        return false;
+        return cmd === this.name || this.subscribed;
     }
 }
 
