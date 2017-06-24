@@ -16,13 +16,12 @@ class Command {
         this.description = description;
         this.help = help;
         this.usage = usage;
-        this.subscribed = false;
     }
 
     /**
      * Primary function of the command. Invoked if trigger returns true.
      *
-     * @param {obj} msg Message object.
+     * @param {Object} msg The received message object.
      * @param {String} args Text of the command minus the command string itself.
      *
      * @return {Promise} Optional return output. If resolved, results in the bot printing the output.
@@ -33,13 +32,14 @@ class Command {
     }
 
     /**
-     * Determines the command strings(s) this module acts on.
+     * Determines the condition(s) this module acts on.
      *
+     * @param {Object} msg The received message object.
      * @param {String} cmd Command string being validated.
      *
-     * @return {boolean} Returns true if the command should be executed, otherwise false.
+     * @return {Boolean} Returns true if the command should be executed, otherwise false.
      */
-    trigger(cmd) {
+    trigger(msg, cmd) {
         return false;
     }
 }

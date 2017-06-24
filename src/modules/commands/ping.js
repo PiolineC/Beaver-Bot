@@ -12,33 +12,36 @@ const help = 'Responds with "Pong!" and the time taken to execute the command.';
 
 class Ping extends Command {
 	constructor() {
-		super(name, description, help);
+		super(name, description, help);		
 		this.start = -1;
+		this.subscribed = false;
 	}
 
 	execute(msg) {
-		if (this.subscribed) {
-			if (msg.body != 'Pong!') {
-				return super.execute();
-			} else {
-				console.log(msg)
-				console.log("msg.timestamp is " + msg.timestamp);
-				console.log("this.start is " + this.start);
-				let timeTaken = parseInt(msg.timestamp) - this.start;
-				let output = "Took " + timeTaken + " ms"
-				this.start = -1;
-				this.subscribed = false;
-				return Promise.resolve(output);
-			}
-		} else {
-			this.start = parseInt(msg.timestamp);
-			this.subscribed = true;
-			return Promise.resolve('Pong!');
-		}
+		let timestamp = msg.timestamp;
+		if (this.subscribed) 
+			return this.pong(timestamp);
+		return this.ping(timestamp);		
 	}
 
-	trigger(cmd) {
+	trigger(msg, cmd) {
+		if (this.subscribed)
+			return msg.body === 'Pong!';
 		return cmd === 'ping';
+	}
+
+	ping(timestamp) {		
+		this.start = parseInt(timestamp);
+		this.subscribed = true;
+		return Promise.resolve('Pong!');
+	}
+
+	pong(timestamp) {
+		let timeTaken = parseInt(timestamp) - this.start;
+		let output = "Took " + timeTaken + " ms";
+		this.start = -1;
+		this.subscribed = false;
+		return Promise.resolve(output);
 	}
 }
 
